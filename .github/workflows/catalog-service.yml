@@ -6,8 +6,9 @@ on:
       - catalog-service/**
     branches:
       - 'main'
+      - 'dev'
   pull_request:
-    branches: [main]
+    branches: [dev]
 
 jobs:
   build:
@@ -15,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./catalog-service
-      DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/bookstore-catalog-service
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
