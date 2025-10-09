@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>25</java.version>
         <spotless-maven-plugin.version>3.0.0</spotless-maven-plugin.version>
+        <dockerImageName>andresmerida1/bookstore-${project.artifactId}</dockerImageName>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -135,14 +136,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build-info</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
+                    <image>
+                        <name>${dockerImageName}</name>
+                    </image>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -150,6 +147,13 @@
                         </exclude>
                     </excludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
 			</plugin>
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
