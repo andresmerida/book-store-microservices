@@ -4,6 +4,7 @@ import static dev.am.catalog_service.util.ConstantsTestUtil.SPRING_TEST_DATABASE
 import static org.assertj.core.api.Assertions.assertThat;
 
 import dev.am.catalog_service.containers.PostgreSQLContainerConfig;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -21,7 +22,15 @@ class ProductRepositoryTest {
     private ProductRepository productRepository;
 
     @Test
-    void shouldGetAllProducts() {
-        assertThat(productRepository.findAll()).hasSize(15);
+    void shouldGetProductByCode() {
+        ProductEntity productEntity = productRepository.findByCode("P100").orElseThrow();
+        assertThat(productEntity.getCode()).isEqualTo("P100");
+        assertThat(productEntity.getName()).isEqualTo("The Hunger Games");
+        assertThat(productEntity.getPrice()).isEqualTo(new BigDecimal("34.0"));
+    }
+
+    @Test
+    void shouldReturnEmptyWhenCodeNotFound() {
+        assertThat(productRepository.findByCode("P120").isPresent()).isFalse();
     }
 }

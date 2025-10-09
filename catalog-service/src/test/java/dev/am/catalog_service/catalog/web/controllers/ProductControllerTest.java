@@ -1,11 +1,14 @@
 package dev.am.catalog_service.catalog.web.controllers;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import dev.am.catalog_service.AbstractIT;
+import dev.am.catalog_service.catalog.domain.ProductDTO;
 import io.restassured.http.ContentType;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -26,5 +29,35 @@ class ProductControllerTest extends AbstractIT {
                 .body("isLast", is(false))
                 .body("hasNext", is(true))
                 .body("hasPrevious", is(false));
+    }
+
+    @Test
+    void shouldGetProductByCode() {
+        ProductDTO productDTO = given().contentType(ContentType.JSON)
+                .when()
+                .get("/api/products/{code}", "P100")
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .extract()
+                .body()
+                .as(ProductDTO.class);
+
+        assertThat(productDTO.code()).isEqualTo("P100");
+        assertThat(productDTO.name()).isEqualTo("The Hunger Games");
+        assertThat(productDTO.price()).isEqualTo(new BigDecimal("34.0"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenProductCodeNotExists() {
+        String code = "invalid_product_code";
+        given().contentType(ContentType.JSON)
+                .when()
+                .get("/api/products/{code}", code)
+                .then()
+                .statusCode(404)
+                .body("status", is(404))
+                .body("title", is("Product Not Found"))
+                .body("detail", is("Product with code " + code + " not found"));
     }
 }
